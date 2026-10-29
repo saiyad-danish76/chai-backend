@@ -2,6 +2,7 @@
   "name": "chai-with-code",
   "version": "1.0.0",
   "description": "A backend at modi code channel ",
+  "type": "module",
   "keywords": [
     "javascript",
     "Backend",
@@ -9,9 +10,11 @@
   ],
   "license": "ISC",
   "author": "Saiyad Danish Hussain",
-  "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon src/index.js"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
   }
 }
