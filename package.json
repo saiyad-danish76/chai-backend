@@ -1,0 +1,17 @@
+{
+  "name": "chai-with-code",
+  "version": "1.0.0",
+  "description": "A backend at modi code channel ",
+  "keywords": [
+    "javascript",
+    "Backend",
+    "chai"
+  ],
+  "license": "ISC",
+  "author": "Saiyad Danish Hussain",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
