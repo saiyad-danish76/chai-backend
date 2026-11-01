@@ -6,13 +6,19 @@ const app = express()
 
 app.use(cors({
     origin : process.env.CORS_ORIGIN,
-    Credential : true
+    credentials : true
 }))
 
 app.use(express.json({limit : "16kb"}))
 app.use(express.urlencoded({extended : true,limit:"16kb"}))
 app.use(express.static("public"))
 app.use(cookieParser())
+
+//importing the routers here 
+import  userRouter from "./routes/user.routes.js"
+
+//router Decleration
+ app.use("/api/v1/users",userRouter)
 
 
 export  {app}
