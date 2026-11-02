@@ -19,8 +19,8 @@ import fs from 'fs';
                 resource_type: 'auto', // This will automatically detect the file type (image, video, etc.)
              })
              //file has been uploaded succsesfully to cloudinary
-             
-            return response.secure_url; // Return the secure URL of the uploaded file
+             fs.unlinkSync(localFilePath); //delete the local file after upload
+            return response; // Return the secure URL of the uploaded file
         } catch (error) {
             fs.unlinkSync(localFilePath);//delete the ;local file after upload 
             
