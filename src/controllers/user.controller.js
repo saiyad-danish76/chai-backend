@@ -129,7 +129,7 @@ const logoutUser = asyncHandler(async(req,res)=>{
 })
 
 const refreshAccessToken = asyncHandler(async(req,res)=>{
-  const incomingRefreshToken = req.cookies.refreshAccessToken || req.body.refreshToken
+  const incomingRefreshToken = req.cookies?.refreshAccessToken || req.body.refreshToken
   if(!incomingRefreshToken){
     throw new ApiError(400,"refresh token is required")
   }
@@ -150,7 +150,7 @@ const refreshAccessToken = asyncHandler(async(req,res)=>{
     secure : true
   }
 
-    const {accessToken,newRefreshToken:refreshToken} = await genrateAccessAndRefreshToken(user._id)
+    const {accessToken,refreshToken} = await genrateAccessAndRefreshToken(user._id)
 
     return res.status(200)
     .cookie("accessToken",accessToken,options)
@@ -218,7 +218,7 @@ const refreshAccessToken = asyncHandler(async(req,res)=>{
 
     const avatar = await uploadToCloudinary(avatarLocalPath);
 
-    if (!avatar.url) {
+    if (!avatar?.url) {
       throw new ApiError(500, "Failed to upload avatar to cloudinary");
     }
 
@@ -229,7 +229,7 @@ const refreshAccessToken = asyncHandler(async(req,res)=>{
 
   )
     const updateUserCoverImage = asyncHandler(async(req,res)=>{
-    const coverImageLocalPath = req.files?.path;
+    const coverImageLocalPath = req.file?.path;
 
     if (!coverImageLocalPath){
       throw new ApiError(400,"Cover image is required")
@@ -237,7 +237,7 @@ const refreshAccessToken = asyncHandler(async(req,res)=>{
 
     const coverImage = await uploadToCloudinary(coverImageLocalPath);
 
-    if (!coverImage.url) {
+    if (!coverImage?.url) {
       throw new ApiError(500, "Failed to upload cover image to cloudinary");
     }
 
@@ -316,7 +316,7 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
       {
         $lookup : {
           from : "videos",
-          localField : "_id",
+          localField : "watchHistory",
           foreignField : "owner",
           as : "watchHistory",
           pipeline : [
