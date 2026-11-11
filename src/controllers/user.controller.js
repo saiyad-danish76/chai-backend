@@ -4,6 +4,7 @@ import { User } from "../models/user.model.js";
 import { uploadToCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 
 
 const genrateAccessAndRefreshToken = async (userId) => {
@@ -137,7 +138,7 @@ const refreshAccessToken = asyncHandler(async(req,res)=>{
 
   const user = await User.findById(decodedToken?._id)
   if(!user ){
-    throw new apiError(404,"user does not exist"
+    throw new ApiError(404,"user does not exist"
 
     )
   }
@@ -149,16 +150,17 @@ const refreshAccessToken = asyncHandler(async(req,res)=>{
     secure : true
   }
 
-    const {accessToken,newRefreshToken} = await genrateAccessAndRefreshToken(user._id)
+    const {accessToken,newRefreshToken:refreshToken} = await genrateAccessAndRefreshToken(user._id)
 
     return res.status(200)
     .cookie("accessToken",accessToken,options)
-    .cookie("refreshToken",newRefreshToken,options)
+    .cookie("refreshToken",refreshToken,options)
     .json(
       new ApiResponse(
         200,
         {
-          accessToken,newRefreshToken
+          accessToken,refreshToken
+        
         },
         "access token refreshed successfully"
       )
@@ -194,7 +196,11 @@ const refreshAccessToken = asyncHandler(async(req,res)=>{
 
   const updateUserProfile = asyncHandler(async(req,res)=>{
     const {fullName,username,email,bio} = req.body
-    const user = await User.findById(req.user?._id)
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      { $set: { fullName, email } },
+      { new: true }
+    ).select("-password")
     if(!user){
       throw new ApiError(404,"user does not exist")
     }
@@ -204,7 +210,7 @@ const refreshAccessToken = asyncHandler(async(req,res)=>{
 
 
   const updateUserAvatar = asyncHandler(async(req,res)=>{
-    const avatarLocalPath = req.files?.path;
+    const avatarLocalPath = req.file?.path;
 
     if (!avatarLocalPath){
       throw new ApiError(400,"Avataar is required")
@@ -229,7 +235,7 @@ const refreshAccessToken = asyncHandler(async(req,res)=>{
       throw new ApiError(400,"Cover image is required")
     }
 
-    const avatar = await uploadToCloudinary(coverImageLocalPath);
+    const coverImage = await uploadToCloudinary(coverImageLocalPath);
 
     if (!coverImage.url) {
       throw new ApiError(500, "Failed to upload cover image to cloudinary");
@@ -265,7 +271,7 @@ const refreshAccessToken = asyncHandler(async(req,res)=>{
           from : "subscriptions",
           localField : "_id",
           foreignField : "subscriber",
-          as : "subscriber to "
+          as : "subscriber to"
         }
       },
       {
@@ -275,11 +281,14 @@ const refreshAccessToken = asyncHandler(async(req,res)=>{
         channelSubscribersCount : {$size : "$subscriber to "},
 
         isSubscribed : { $cond : {
+
           if : {
-          $in : [req.user?._id,"$subscribers.subscriber"]
-        }},
-        then : true,
-        else : false
+          $in : [req.user?._id,"$subscribers.subscriber"]},
+            then : true,
+            else : false,
+          
+        },
+        
       }},
       {
         $project :{
@@ -357,6 +366,6 @@ export { registerUser ,
   updateUserCoverImage,
   getUserChannelProfile,
   getUserWatchHistory,
-  
+
 
 };
