@@ -170,10 +170,90 @@ const refreshAccessToken = asyncHandler(async(req,res)=>{
 
 
 
+  const changeUserPassword = asyncHandler(async(req,res)=>{
+    const {oldPassword,newPassword,confirmPassword} = req.body
+     const user = await User.findById(req.user?._id)
+     const isPasswordValid = await user.isPasswordCorrect(oldPassword)
+     if(!isPasswordValid){
+      throw new ApiError(401,"old password is not correct")
+     }
+     if(newPassword !== confirmPassword){
+      throw new ApiError(400,"passwords do not match")
+     }
+     user.password = newPassword
+     await user.save()
+     return res.status(200).json(new ApiResponse(200,{},"password changed successfully"))
+
+  })
+
+
+  const getCurrentUser = asyncHandler(async(req,res)=>{
+    return res.status(200).json(new ApiResponse(200,{user : req.user},"current user fetched successfully"))
+  })
+
+
+  const updateUserProfile = asyncHandler(async(req,res)=>{
+    const {fullName,username,email,bio} = req.body
+    const user = await User.findById(req.user?._id)
+    if(!user){
+      throw new ApiError(404,"user does not exist")
+    }
+    res.status(200).json(new ApiResponse(200,{user},"user profile updated successfully"))
+
+  })
+
+
+  const updateUserAvatar = asyncHandler(async(req,res)=>{
+    const avatarLocalPath = req.files?.path;
+
+    if (!avatarLocalPath){
+      throw new ApiError(400,"Avataar is required")
+    }
+
+    const avatar = await uploadToCloudinary(avatarLocalPath);
+
+    if (!avatar.url) {
+      throw new ApiError(500, "Failed to upload avatar to cloudinary");
+    }
+
+    await User.findByIdAndUpdate(req.user._id, { avatar: avatar.url }, { new: true });
+
+    return res.status(200).json(new ApiResponse(200, { avatar: avatar.url }, "Avatar updated successfully"));
+  }
+
+  )
+    const updateUserCoverImage = asyncHandler(async(req,res)=>{
+    const coverImageLocalPath = req.files?.path;
+
+    if (!coverImageLocalPath){
+      throw new ApiError(400,"Cover image is required")
+    }
+
+    const avatar = await uploadToCloudinary(coverImageLocalPath);
+
+    if (!coverImage.url) {
+      throw new ApiError(500, "Failed to upload cover image to cloudinary");
+    }
+
+    await User.findByIdAndUpdate(req.user._id, { coverImage: coverImage.url }, { new: true });
+
+    return res.status(200).json(new ApiResponse(200, { coverImage: coverImage.url }, "Cover image updated successfully"));
+  })
+
+
+  
+
+
+
 
 
 export { registerUser ,
   loginUser,
   logoutUser,
-  refreshAccessToken
+  refreshAccessToken,
+  changeUserPassword,
+  getCurrentUser,
+  updateUserProfile,
+  updateUserAvatar,
+  updateUserCoverImage
 };
