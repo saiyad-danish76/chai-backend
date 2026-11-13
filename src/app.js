@@ -2,6 +2,7 @@ import express from "express"
 import cors from "cors"
 import cookieParser from "cookie-parser"
 
+
    
 
 const app = express()
@@ -19,10 +20,12 @@ app.use(cookieParser())
 //importing the routers here 
 import  userRouter from "./routes/user.routes.js"
 import videoRouter from "./routes/videos.routes.js"
+import subscriptionRouter from "./routes/subscription.routes.js"
 
 //router Decleration
  app.use("/api/v1/users",userRouter)
  app.use("/api/v1/videos", videoRouter)
+ app.use("/api/v1/subscriptions", subscriptionRouter)
 
 
 export  {app}
