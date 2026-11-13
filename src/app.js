@@ -24,6 +24,7 @@ import subscriptionRouter from "./routes/subscription.routes.js"
 import healthcheckRouter from "./routes/healthcheck.routes.js"
 import likeRouter from "./routes/like.routes.js"
 import commentRouter from "./routes/comment.routes.js"
+import tweetRouter from "./routes/tweet.routes.js"
 
 //router Decleration
  app.use("/api/v1/users",userRouter)
@@ -32,6 +33,7 @@ import commentRouter from "./routes/comment.routes.js"
  app.use("/api/v1/healthcheck", healthcheckRouter)
  app.use("/api/v1/likes", likeRouter) 
  app.use("/api/v1/comments", commentRouter)
+ app.use("/api/v1/tweets", tweetRouter)
 
 
 export  {app}
